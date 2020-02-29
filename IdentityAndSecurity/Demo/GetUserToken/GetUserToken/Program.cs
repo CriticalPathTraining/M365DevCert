@@ -1,55 +1,47 @@
-﻿using Microsoft.Identity.Client;
-using System;
+﻿using System;
 using System.Linq;
-using Diagnostics = System.Diagnostics;
-using System.Security;
-using System.Threading.Tasks;
-using msal = Microsoft.Identity.Client;
 using Microsoft.Graph;
+
+class AppSettings {
+
+  // configuration data for public client app
+  public const string clientId = "";
+  public const string tenantName = "YOUR_TENANT.onMicrosoft.com";
+  public const string redirectUri = "https://localhost/app1234";
+
+  // user name and password for password credential flow
+  public const string userName = "tedp@M365DevCert.onMicrosoft.com";
+  public const string userPassword = "pass@word1";
+
+  // configuration data for confidential client app
+  public const string appOnlyClientId = "";
+  public const string appOnlyClientSecret = ";
+
+
+  // generic v2 endpoint references "organizations" instead of "common"
+  public const string tenantCommonAuthority = "https://login.microsoftonline.com/organizations";
+  public const string tenantSpecificAuthority = "https://login.microsoftonline.com/" + tenantName;
+
+  // Microsoft Graph API Root URL  
+  public const string urlMicrosoftGraphApiRoot = "https://graph.microsoft.com/";
+
+  public static readonly string[] scopesForMicrosoftGraph = new string[] { "user.read" };
+
+}
 
 class Program {
 
- 
-  static string GetAccessTokenWithDeviceCode(string[] scopes) {
-
-    // device code authentication requires tenant-specific authority URL
-    var appPublic = PublicClientApplicationBuilder.Create(AppSettings.clientId)
-                      .WithAuthority(AppSettings.tenantSpecificAuthority)
-                      .Build();
-
-    // this method call will block until you have logged in using the generated device code
-    var authResult = appPublic.AcquireTokenWithDeviceCode(scopes, deviceCodeCallbackParams => {
-      // retrieve device code and verification URL from deviceCodeCallbackParams 
-      string deviceCode = deviceCodeCallbackParams.UserCode;
-      string verificationUrl = deviceCodeCallbackParams.VerificationUrl;
-      Console.WriteLine();
-      Console.WriteLine("When prompted by the browser, copy-and-paste the following device code: " + deviceCode);
-      Console.WriteLine();
-      Console.WriteLine("Opening Browser at " + verificationUrl);
-      Diagnostics.Process.Start("chrome.exe", verificationUrl);
-      Console.WriteLine();
-      Console.WriteLine("This console app will now block until you enter the device code and log in");
-      // return task result
-      return Task.FromResult(0);
-    }).ExecuteAsync().Result;
-
-
-    return authResult.AccessToken;
-
-  }
-
-
   static void Main() {
 
-    //GetUserInfo();
-    GetOrgInfo();
+    GetUserInfo();
+   // GetOrgInfo();
 
   }
 
-  // static IAuthenticationProvider authProvider = new UserInteractiveAuthProvider();
+  static IAuthenticationProvider authProvider = new UserInteractiveAuthProvider();
   // static IAuthenticationProvider authProvider = new UserDirectPasswordAuthProvider();
   // static IAuthenticationProvider authProvider = new UserDeviceCodeAuthProvider();
-  //static IAuthenticationProvider authProvider = new AppOnlyAuthProvider();
+  // static IAuthenticationProvider authProvider = new AppOnlyAuthProvider();
 
   static GraphServiceClient graphServiceClient = new GraphServiceClient(authProvider);
 
@@ -82,4 +74,6 @@ class Program {
     Console.WriteLine();
     Console.WriteLine();
   }
+
+
 }

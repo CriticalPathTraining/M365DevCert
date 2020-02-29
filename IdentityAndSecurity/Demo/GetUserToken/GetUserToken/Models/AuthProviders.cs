@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.Graph;
 
-
 class UserInteractiveAuthProvider : IAuthenticationProvider {
 
   public Task AuthenticateRequestAsync(HttpRequestMessage request) {
